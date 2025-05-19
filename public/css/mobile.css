@@ -1,0 +1,177 @@
+/* 移动端适配样式 */
+
+/* 触摸反馈样式 */
+.touch-active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+/* 基础响应式设置 */
+@media screen and (max-width: 768px) {
+  .container {
+    max-width: 100%;
+    padding: 10px;
+  }
+  
+  header {
+    padding: 15px 0;
+    margin-bottom: 20px;
+  }
+  
+  header h1 {
+    font-size: 1.8rem;
+  }
+  
+  header p {
+    font-size: 0.9rem;
+  }
+  
+  /* 文章列表视图 */
+  .articles-container {
+    padding: 15px;
+  }
+  
+  .article-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .article-actions {
+    width: 100%;
+    margin-top: 15px;
+    justify-content: flex-start;
+  }
+  
+  /* 生成表单 */
+  .generation-form {
+    width: 100%;
+  }
+  
+  /* 文章详情视图 */
+  .article-container {
+    padding: 15px;
+  }
+  
+  #article-title {
+    font-size: 1.5rem;
+  }
+  
+  /* 下载按钮 */
+  .download-btn-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 10px 15px;
+    min-width: unset;
+  }
+  
+  /* 增强触摸体验 */
+  .btn, 
+  .article-item,
+  input[type="text"],
+  audio::-webkit-media-controls-play-button {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* 增大触摸目标区域 */
+  .btn, 
+  .article-item,
+  #back-to-list,
+  audio::-webkit-media-controls-play-button {
+    min-height: 44px; /* 苹果推荐的最小触摸目标高度 */
+  }
+  
+  /* 优化滚动体验 */
+  body {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+}
+
+/* 小屏幕手机 */
+@media screen and (max-width: 480px) {
+  header h1 {
+    font-size: 1.6rem;
+  }
+  
+  #article-content h1 {
+    font-size: 1.4rem;
+  }
+  
+  #article-content h2 {
+    font-size: 1.3rem;
+  }
+  
+  #article-content h3 {
+    font-size: 1.2rem;
+  }
+  
+  .resources h3 {
+    font-size: 1.2rem;
+  }
+  
+  .article-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .article-info h3 {
+    font-size: 1.2rem;
+  }
+  
+  .audio-player {
+    margin-bottom: 15px;
+  }
+  
+  /* 增强小屏幕用户体验 */
+  .topic-hint {
+    font-size: 0.8rem;
+  }
+  
+  .articles-container h2 {
+    font-size: 1.4rem;
+  }
+  
+  #topic-input {
+    padding: 12px;
+    font-size: 16px; /* 防止iOS自动缩放 */
+  }
+  
+  /* 改进加载状态可见性 */
+  .loading {
+    padding: 10px;
+    background-color: rgba(52, 152, 219, 0.1);
+    border-radius: 5px;
+    text-align: center;
+  }
+}
+
+/* 横屏适配 */
+@media screen and (max-width: 896px) and (orientation: landscape) {
+  .container {
+    max-width: 90%;
+  }
+  
+  .generation-form {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .topic-input-container {
+    flex: 1;
+  }
+  
+  #generate-button {
+    align-self: flex-end;
+    margin-bottom: 5px;
+  }
+  
+  .download-btn-container {
+    flex-direction: row;
+  }
+} 
