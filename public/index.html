@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>每日英语学习</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>每日英语学习</h1>
+      <p>每日推送英语文章，提升你的英语阅读能力</p>
+    </header>
+
+    <main>
+      <!-- 文章列表视图 -->
+      <div id="articles-list-view">
+        <div class="controls">
+          <div class="generation-form">
+            <div class="topic-input-container">
+              <input type="text" id="topic-input" placeholder="输入文章主题（可选）" />
+              <div class="topic-hint">留空将从科技、环保、经济三大主题中随机选择</div>
+            </div>
+            <button id="generate-button" class="btn btn-primary">
+              <i class="fas fa-magic"></i> 生成新文章
+            </button>
+          </div>
+          <div id="loading" class="loading hidden">正在生成，请稍等...</div>
+          <div id="error-message" class="error hidden"></div>
+        </div>
+        
+        <div class="articles-container">
+          <h2>文章列表</h2>
+          <div id="articles-list" class="articles-list">
+            <!-- 文章列表将在这里动态生成 -->
+            <div class="no-articles hidden">目前没有可用的文章，请点击"生成新文章"按钮创建一篇。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 文章详情视图 -->
+      <div id="article-detail-view" class="hidden">
+        <div class="article-navigation">
+          <button id="back-to-list" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> 返回列表
+          </button>
+        </div>
+        
+        <div class="article-container">
+          <div id="article-date"></div>
+          <div id="article-title"></div>
+          <div id="article-content"></div>
+          
+          <div class="resources">
+            <h3><i class="fas fa-download"></i> 资源下载</h3>
+            <div class="resource-buttons">
+              <div class="audio-player">
+                <audio id="audio-player" controls></audio>
+              </div>
+              <div class="download-btn-container">
+                <a id="pdf-download" class="btn btn-primary" target="_blank">
+                  <i class="fas fa-file-pdf"></i> 下载PDF
+                </a>
+                <a id="mp3-download" class="btn btn-secondary" target="_blank">
+                  <i class="fas fa-file-audio"></i> 下载MP3
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2023 每日英语学习 | 使用 OpenAI API 技术</p>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html> 
