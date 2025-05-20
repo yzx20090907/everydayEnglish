@@ -24,6 +24,15 @@
               <input type="text" id="topic-input" placeholder="输入文章主题（可选）" />
               <div class="topic-hint">留空将从科技、环保、经济三大主题中随机选择</div>
             </div>
+            <div class="lexile-input-container">
+              <label for="lexile-slider">蓝思值: <span id="lexile-value">800</span></label>
+              <input type="range" id="lexile-slider" min="200" max="1600" step="50" value="800" class="slider" />
+              <div class="lexile-range-labels">
+                <span class="range-min">简单 (200)</span>
+                <span class="range-max">困难 (1600)</span>
+              </div>
+              <div class="lexile-hint">蓝思值用于控制文章难度，一般高中水平为800-1100</div>
+            </div>
             <button id="generate-button" class="btn btn-primary">
               <i class="fas fa-magic"></i> 生成新文章
             </button>

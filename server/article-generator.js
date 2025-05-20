@@ -10,13 +10,34 @@ const openai = new OpenAI({
 });
 
 // 生成文章内容
-async function generateArticleContent(topic = null) {
+async function generateArticleContent(topic = null, lexile = null) {
   // 如果未指定主题，从三大主题中随机选择一个
   if (!topic) {
     const defaultTopics = ['科技', '环保', '经济'];
     topic = defaultTopics[Math.floor(Math.random() * defaultTopics.length)];
     console.log(`未指定主题，自动选择主题: ${topic}`);
   }
+  
+  // 设置默认蓝思值范围（如果未指定）
+  let lexileRange = '800-1000';
+  if (lexile) {
+    if (lexile < 600) {
+      lexileRange = '200-600';
+    } 
+    else if (lexile >= 600 && lexile < 900) {
+      lexileRange = '600-900';
+    } 
+    // 如果指定的蓝思值在1000-1200之间，设置为"较难"，1000-1200
+    else if (lexile >= 900 && lexile < 1200) {
+      lexileRange = '900-1200';
+    }
+    // 如果指定的蓝思值大于1200，设置为"困难"，1200-1400
+    else {
+      lexileRange = '1200-1800';
+    }
+  }
+  
+  console.log(`文章生成使用蓝思值范围: ${lexileRange}`);
   
   const response = await openai.chat.completions.create({
     model: "gpt-4.1",
@@ -27,14 +48,24 @@ async function generateArticleContent(topic = null) {
       },
       {
         role: "user",
-        content: `请以"${topic}"为主题，创作一篇500字左右的英语短文，适合词汇量2500左右的高中生阅读。要求：1. 使用Markdown格式；2. 文章必须有一个明确的主标题(格式为: # 标题名称)；3. 文章必须有2-3个小标题(格式为: ## 小标题名称)；4. 生词比例控制在5%-10%之间（约25-50个生词），生词定义为超出高中生2500基础词汇量的词；5. 内容要有趣且实用；6. 不要在文章最后加生词表或词汇表。`
+        content: `请以"${topic}"为主题，创作一篇500字左右的英语短文，要求：
+1. 使用Markdown格式；
+2. 文章必须有一个明确的主标题(格式为: # 标题名称)；
+3. 文章必须有2-3个小标题(格式为: ## 小标题名称)；
+4. 文章蓝思值(Lexile Measure)范围控制在${lexileRange}；
+5. 生词比例控制在5%-10%之间（约25-50个生词），生词定义为超出高中生2500基础词汇量的词；
+6. 内容要有趣且实用；
+7. 不要在文章最后加生词表或词汇表。`
       }
     ],
     temperature: 0.7,
     max_tokens: 1500
   });
 
-  return response.choices[0].message.content;
+  return {
+    content: response.choices[0].message.content,
+    lexile: lexileRange
+  };
 }
 
 // 生成音频文件
@@ -234,7 +265,7 @@ function extractArticleContent(text) {
 }
 
 // 主函数：生成文章、音频和PDF
-async function generateArticle(topic = null) {
+async function generateArticle(topic = null, lexile = null) {
   try {
     const today = new Date().toISOString().split('T')[0];
     const articlesDir = path.join(__dirname, '../public/articles');
@@ -245,10 +276,19 @@ async function generateArticle(topic = null) {
     }
     
     // 生成文章内容
-    const articleContent = await generateArticleContent(topic);
+    const articleResult = await generateArticleContent(topic, lexile);
+    const articleContent = articleResult.content;
+    const usedLexile = articleResult.lexile;
     
     // 解析文章内容
     const parsedContent = parseMarkdown(articleContent);
+    
+    // 获取文章标题，移除不合法的文件名字符并确保标题存在
+    const title = parsedContent.title || `Article_${Date.now()}`;
+    const safeTitle = title.replace(/[\\/:*?"<>|]/g, '_').replace(/\s+/g, '_');
+    
+    // 使用日期+文章标题作为文件名前缀
+    const filePrefix = `${today}-${safeTitle}`;
     
     // 保存JSON文件
     const articleData = {
@@ -256,23 +296,26 @@ async function generateArticle(topic = null) {
       title: parsedContent.title || `Article ${today}`,
       subtitles: parsedContent.subtitles,
       topic: topic || '自动选择',
-      content: articleContent
+      lexile: usedLexile,  // 保存使用的蓝思值范围
+      content: articleContent,
+      filePrefix: filePrefix // 保存文件前缀便于后续查找
     };
     
-    const jsonPath = path.join(articlesDir, `${today}.json`);
+    const jsonPath = path.join(articlesDir, `${filePrefix}.json`);
     fs.writeFileSync(jsonPath, JSON.stringify(articleData, null, 2));
     
     // 生成PDF
-    const pdfPath = path.join(articlesDir, `${today}.pdf`);
+    const pdfPath = path.join(articlesDir, `${filePrefix}.pdf`);
     generatePDF(articleContent, pdfPath);
     
     // 生成音频
-    const audioPath = path.join(articlesDir, `${today}.mp3`);
+    const audioPath = path.join(articlesDir, `${filePrefix}.mp3`);
     await generateAudio(articleContent, audioPath);
     
     return {
       success: true,
-      article: articleData
+      article: articleData,
+      filePrefix: filePrefix
     };
   } catch (error) {
     console.error('生成文章失败:', error);

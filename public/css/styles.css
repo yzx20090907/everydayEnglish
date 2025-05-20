@@ -309,36 +309,84 @@ audio::-webkit-media-controls-play-button {
   margin: 0 auto;
 }
 
-.topic-input-container {
+/* 输入框容器样式 */
+.topic-input-container,
+.lexile-input-container {
+  margin-bottom: 15px;
   width: 100%;
+  text-align: left;
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-#topic-input {
+/* 主题输入框样式 */
+#topic-input,
+#lexile-input {
   width: 100%;
   padding: 12px 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-#topic-input:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+#topic-input:focus,
+#lexile-input:focus {
   outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
 }
 
-.topic-hint {
+/* 提示文本样式 */
+.topic-hint,
+.lexile-hint {
+  margin-top: 5px;
   font-size: 0.85rem;
   color: #666;
   margin-left: 5px;
 }
 
+/* 生成按钮样式 */
 #generate-button {
   min-width: 180px;
+}
+
+/* 文章蓝思值标签样式 */
+.article-lexile {
+  font-size: 0.85rem;
+  color: #e74c3c;
+  background-color: rgba(231, 76, 60, 0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  font-weight: 600;
+}
+
+/* 蓝思值难度级别样式 */
+.lexile-easy {
+  color: #27ae60;
+  background-color: rgba(39, 174, 96, 0.1);
+  border-left: 3px solid #27ae60;
+}
+
+.lexile-medium {
+  color: #3498db;
+  background-color: rgba(52, 152, 219, 0.1);
+  border-left: 3px solid #3498db;
+}
+
+.lexile-advanced {
+  color: #f39c12;
+  background-color: rgba(243, 156, 18, 0.1);
+  border-left: 3px solid #f39c12;
+}
+
+.lexile-hard {
+  color: #e74c3c;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-left: 3px solid #e74c3c;
 }
 
 .loading {
@@ -362,4 +410,73 @@ footer {
   color: #666;
   font-size: 0.9rem;
   border-top: 1px solid #ddd;
+}
+
+/* 滑动条容器样式 */
+.lexile-input-container label {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #2c3e50;
+  display: block;
+}
+
+/* 滑动条样式 */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(to right, #3498db 0%, #e74c3c 100%);
+  border-radius: 10px;
+  outline: none;
+  margin: 15px 0;
+}
+
+/* 滑动条拖动按钮样式 */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  border: 2px solid #3498db;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #f0f7ff;
+  transform: scale(1.1);
+}
+
+.slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  border: 2px solid #3498db;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  background: #f0f7ff;
+  transform: scale(1.1);
+}
+
+/* 蓝思值范围标签样式 */
+.lexile-range-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+#lexile-value {
+  color: #e74c3c;
+  font-weight: bold;
 } 

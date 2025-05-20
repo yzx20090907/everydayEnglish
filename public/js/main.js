@@ -20,6 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const generateButtonEl = document.getElementById('generate-button');
   const loadingEl = document.getElementById('loading');
   const errorMessageEl = document.getElementById('error-message');
+  const lexileSliderEl = document.getElementById('lexile-slider');
+  const lexileValueEl = document.getElementById('lexile-value');
+
+  // 初始化滑动条值显示
+  lexileValueEl.textContent = lexileSliderEl.value;
+  
+  // 监听滑动条值变化
+  lexileSliderEl.addEventListener('input', function() {
+    lexileValueEl.textContent = this.value;
+  });
 
   // 当前文章
   let currentArticles = [];
@@ -54,13 +64,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 获取指定日期的文章
-  async function getArticle(date) {
+  // 获取指定文章
+  async function getArticle(dateOrPrefix) {
     try {
       showLoading(true);
       hideError();
       
-      const response = await fetch(`/api/article/${date}`);
+      // 检查参数是否为文件前缀（如果长度大于10且包含连字符）
+      let url = dateOrPrefix.length > 10 && dateOrPrefix.includes('-') ? 
+        `/api/article-by-prefix/${dateOrPrefix}` : 
+        `/api/article-by-prefix/${dateOrPrefix}`; // 统一使用前缀API
+      
+      const response = await fetch(url);
       
       if (!response.ok) {
         throw new Error('获取文章失败');
@@ -86,12 +101,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const topicInput = document.getElementById('topic-input');
       const topic = topicInput.value.trim();
       
+      // 获取用户选择的蓝思值
+      const lexileSlider = document.getElementById('lexile-slider');
+      const lexile = parseInt(lexileSlider.value);
+      
       const response = await fetch('/api/generate-today', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ topic: topic || null }) // 如果为空，传递null
+        body: JSON.stringify({ 
+          topic: topic || null,
+          lexile: lexile
+        })
       });
       
       if (!response.ok) {
@@ -104,10 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
       await getArticlesList();
       
       // 显示新生成的文章
-      showArticleDetail(data.date);
+      showArticleDetail(data.filePrefix);
       
       // 清空主题输入框
       topicInput.value = '';
+      // 重置蓝思值滑动条到默认值
+      lexileSlider.value = 800;
+      lexileValueEl.textContent = '800';
     } catch (error) {
       console.error('生成文章失败:', error);
       showError('生成文章失败，请检查API密钥并稍后再试。');
@@ -138,12 +163,45 @@ document.addEventListener('DOMContentLoaded', () => {
         subtitlesText = article.subtitles.join(' | ');
       }
       
+      // 获取蓝思值的难度级别标签
+      let lexileDifficulty = '';
+      let lexileClass = '';
+      if (article.lexile) {
+        // 提取蓝思值的数字部分（如果是范围，取中间值）
+        let lexileValue = article.lexile;
+        if (lexileValue.includes('-')) {
+          const [min, max] = lexileValue.split('-').map(Number);
+          const avgLexile = (min + max) / 2;
+          
+          if (avgLexile < 600) {
+            lexileDifficulty = '初级';
+            lexileClass = 'lexile-easy';
+          } else if (avgLexile < 900) {
+            lexileDifficulty = '中级';
+            lexileClass = 'lexile-medium';
+          } else if (avgLexile < 1200) {
+            lexileDifficulty = '中高级';
+            lexileClass = 'lexile-advanced';
+          } else {
+            lexileDifficulty = '高级';
+            lexileClass = 'lexile-hard';
+          }
+        }
+      }
+      
+      // 添加主题和蓝思值信息
+      let metaInfo = '';
+      if (article.topic) {
+        metaInfo += `<div class="article-topic">主题: ${article.topic}</div>`;
+      }
+      
       articleItem.innerHTML = `
-        <div class="article-info" data-date="${article.date}">
+        <div class="article-info" data-prefix="${article.filePrefix}">
           <h3>${article.title}</h3>
           <div class="article-meta">
             <div class="article-date">${formattedDate}</div>
-            ${article.topic ? `<div class="article-topic">主题: ${article.topic}</div>` : ''}
+            ${metaInfo}
+            ${article.lexile ? `<div class="article-lexile ${lexileClass}">难度: ${lexileDifficulty} (蓝思值: ${article.lexile})</div>` : ''}
           </div>
           ${subtitlesText ? `<div class="article-subtitles">${subtitlesText}</div>` : ''}
         </div>
@@ -160,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // 添加点击事件
       const articleInfo = articleItem.querySelector('.article-info');
       articleInfo.addEventListener('click', () => {
-        showArticleDetail(article.date);
+        showArticleDetail(article.filePrefix);
       });
       
       articlesListEl.appendChild(articleItem);
@@ -184,6 +242,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let dateText = formattedDate;
     if (data.topic) {
       dateText += ` · 主题: ${data.topic}`;
+    }
+    if (data.article.lexile) {
+      dateText += ` · 蓝思值: ${data.article.lexile}`;
     }
     
     articleDateEl.textContent = dateText;
@@ -211,8 +272,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 查看文章详情
-  function showArticleDetail(date) {
-    getArticle(date);
+  function showArticleDetail(prefixOrDate) {
+    getArticle(prefixOrDate);
   }
 
   // 显示"没有文章"提示
