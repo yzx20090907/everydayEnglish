@@ -125,8 +125,10 @@ function generatePDF(text, outputPath) {
     doc.text('Daily English Reading', 105, 20, { align: 'center' });
   }
   
-  // 添加日期
-  const today = new Date().toISOString().split('T')[0];
+  // 添加日期（使用UTC+8时区）
+  const now = new Date();
+  const utcPlus8 = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+  const today = utcPlus8.toISOString().split('T')[0];
   doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
   doc.text(`Date: ${today}`, 105, 30, { align: 'center' });
@@ -267,7 +269,12 @@ function extractArticleContent(text) {
 // 主函数：生成文章、音频和PDF
 async function generateArticle(topic = null, lexile = null) {
   try {
-    const today = new Date().toISOString().split('T')[0];
+    // 获取当前UTC+8时区的日期
+    const now = new Date();
+    // 加上8小时的毫秒数
+    const utcPlus8 = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+    const today = utcPlus8.toISOString().split('T')[0];
+    
     const articlesDir = path.join(__dirname, '../public/articles');
     
     // 确保文章目录存在
